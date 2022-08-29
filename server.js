@@ -24,6 +24,7 @@ app.get('/', res => {
 // Database requests
 app.post('/task/add', firestore.addTask);
 app.delete('/task/delete', firestore.deleteTask);
+app.patch('/update/:id', firestore.updateTask);
 app.get('/task', firestore.getAllTasks);
 app.post('/column/add', firestore.addColumn);
 

@@ -55,6 +55,35 @@ firestore.deleteTask = async (req, res) => {
   }
 }
 
+// update selected task
+firestore.updateTask = async (req, res) => {
+  try{
+    const id = req.params.id;
+    const newbody = {
+      flare: req.body.flare,
+      title: req.body.title,
+      details: req.body.details,
+      status: req.body.status,
+      imageUrl: req.body.image,
+      tasklist: req.body.tasklist
+    }
+    const body = req.body; // can i grab the entire req body as an object?
+    console.log('hell0');
+    console.log(`request body : ${body}`); 
+    const reponseRef = await db.collection('tasks').doc(id).update(body);
+    // const reponseRef = await db.collection('tasks').doc(id).update({
+    //   flare: req.body.flare,
+    //   title: req.body.title,
+    //   details: req.body.details,
+    //   status: req.body.status,
+    //   imageUrl: req.body.imageUrl,
+    //   tasklist: req.body.tasklist});
+    res.status(200).send('task updated!');
+  } catch (error) {
+    res.status(404).send(error.message);
+  }
+}
+
 // get all tasks
 firestore.getAllTasks = async (req, res) => {
   try {
