@@ -33,7 +33,9 @@ firestore.addTask = async (req, res) => {
       flare: req.body.flare,
       title: req.body.title,
       details: req.body.details,
-      status: req.body.status
+      status: req.body.status,
+      imageUrl: req.body.image,
+      tasklist: req.body.tasklist
     }
     const response = await db.collection('tasks').add(task);
     res.status(200).send(task);
@@ -45,7 +47,7 @@ firestore.addTask = async (req, res) => {
 // delete selected task
 firestore.deleteTask = async (req, res) => {
   try{
-    const id = req.body.id;
+    const id = req.params.id;
     const reponseRef = await db.collection('tasks').doc(id).delete();
     req.status(200).send('task deleted');
   } catch (error) {
@@ -56,10 +58,55 @@ firestore.deleteTask = async (req, res) => {
 // get all tasks
 firestore.getAllTasks = async (req, res) => {
   try {
-    const response = db.collection('tasks')
+    const response = await db.collection('tasks').get();
+    const responseArr = [];
+    response.forEach(doc => {
+      responseArr.push(doc.data())
+    });
+    res.status(200).send(responseArr);
   } catch (error) {
-
+    res.status(404).send(error.message);
   }
 }
+
+// add columns
+firestore.addColumn = async (req, res) => {
+  try{
+    const column = {
+      name: req.body.name
+    }
+    const response = await db.collection('columns').add(column);
+    res.status(200).send('item succesfully added');
+  } catch (error) {
+    res.status(404).send(error.message);
+  }
+}
+
+// get columns 
+firestore.getColumns = async (req, res) => {
+  try{
+    const response = await db.collection('columns').get();
+    const responseArr = [];
+    response.forEach(doc => {
+      responseArr.push(doc.data())
+    });
+    res.status(200).send(responseArr);
+  } catch (error) {
+    res.status(404).send(error.message);
+  }
+}
+
+// delete selected task
+firestore.deleteColumn = async (req, res) => {
+  try{
+    const id = req.params.id;
+    const reponseRef = await db.collection('columns').doc(id).delete();
+    req.status(200).send('task deleted');
+  } catch (error) {
+    res.status(404).send(error.message);
+  }
+}
+
+// 
 
 module.exports = firestore;

@@ -22,7 +22,10 @@ app.get('/', res => {
 });
 
 // Database requests
-app.post('/addTask', firestore.addTask);
+app.post('/task/add', firestore.addTask);
+app.delete('/task/delete', firestore.deleteTask);
+app.get('/task', firestore.getAllTasks);
+app.post('/column/add', firestore.addColumn);
 
 app.get('*', res => {
     res.send('Nothing is here! Try another endpoint...');
