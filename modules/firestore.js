@@ -5,15 +5,16 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const admin = require('firebase-admin');
-const { response } = require('express');
+const { response, urlencoded } = require('express');
 
 admin.initializeApp({
   credential: admin.credential.cert({  
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY, }),
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\n/gm, "\n"), }),
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
 
@@ -39,7 +40,6 @@ firestore.getBoardData = async (req, res) => {
     const taskRef = db.collection('tasks');
     const columnRef = db.collection('columns');
     const id = req.params.id;
-    console.log(id);
     // create collection query
     const taskQueryRef = await taskRef.where('boardId', '==', id).get();
     const columnQueryRef = await columnRef.where('boardId', '==', id).get();
@@ -52,7 +52,6 @@ firestore.getBoardData = async (req, res) => {
     columnQueryRef.forEach(doc => {
       responseArr.push(doc.data());
     })
-    console.log(responseArr);
     res.status(200).send(taskQueryRef, columnQueryRef);
   } catch (error) {
     res.status(400).send(error.message);
@@ -94,7 +93,6 @@ firestore.getOneTasks = async (req, res) => {
 // get all tasks
 firestore.getAllTasks = async (req, res) => {
   try {
-    console.log('hello get All');
     const response = await db.collection('tasks').get();
     const responseArr = [];
     response.forEach(doc => {
@@ -185,8 +183,6 @@ firestore.updateAllTasks = async (req, res) => {
     const { id } = req.params;
     const body = req.body;
     const reponseRef = await db.collection('tasks').doc(id).update(body);
-    console.log(`apparently updated now`);
-
     res.status(200).send('successfully updated');
   } catch (error) {
     res.status(404).send(error.message);
