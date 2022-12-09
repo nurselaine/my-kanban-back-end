@@ -8,13 +8,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const admin = require('firebase-admin');
-const { response, urlencoded } = require('express');
 
 admin.initializeApp({
   credential: admin.credential.cert({  
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\n/gm, "\n"), }),
+    privateKey: process.env.FIREBASE_PRIVATE_KEY 
+      ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') 
+      : undefined, }),
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
 
@@ -27,7 +28,6 @@ firestore.createBoard = async (req,res) => {
   try {
     const boardName = req.body.name;
     const responseRef = await db.collection('boards').add({name: boardName});
-    // console.log({id: responseRef._path.segments[1]});
     res.status(200).send(responseRef);
   } catch (error) {
     res.status(400).send(error.message);
@@ -43,8 +43,6 @@ firestore.getBoardData = async (req, res) => {
     // create collection query
     const taskQueryRef = await taskRef.where('boardId', '==', id).get();
     const columnQueryRef = await columnRef.where('boardId', '==', id).get();
-    // console.log(`taskQueryRef ${taskQueryRef}`);
-    // console.log(`columnQueryRef ${columnQueryRef}`);
     const responseArr = [];
     taskQueryRef.forEach(doc => {
       responseArr.push(doc.data());
@@ -120,7 +118,6 @@ firestore.updateTask = async (req, res) => {
   try{
     const id = req.params.id;
     const body = req.body;
-    // console.log(`request body : ${JSON.stringify(body)}`); 
     const reponseRef = await db.collection('tasks').doc(id).update(body);
     res.status(200).send('task updated!');
   } catch (error) {
@@ -134,7 +131,6 @@ firestore.addColumn = async (req, res) => {
     const column = {
       name: req.body.name,
       index: req.body.index,
-      // boardId: req.body.boardId
     }
     const response = await db.collection('columns').add(column);
     res.status(200).send('item succesfully added');
