@@ -15,7 +15,7 @@ app.use(cors());
 
 app.use(logger);
 
-app.get('/', res => {
+app.get('/', (req, res) => {
   try{
     console.log('Kanban Server');
     res.status(200).send('Welcome to my Kanban server!');
