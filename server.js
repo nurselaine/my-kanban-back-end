@@ -38,6 +38,9 @@ app.post('/column/add', firestore.addColumn);
 // app.delete('/column/delete/:id', firestore.deleteColumn);
 app.patch('/column/update/:id', firestore.updateColumn);
 
+console.log('Project ID ',FIREBASE_PROJECT_ID);
+console.log('fake key', FIREBASE_PRIVATE_KEY);
+
 app.get('*', (req, res, next) => {
     res.send('Nothing is here! Try another endpoint...');
 });
